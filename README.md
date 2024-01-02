@@ -23,6 +23,10 @@ most config fields change per model type, but every config has the following fie
 }
 ```
 
+"model" is the model definition. for autoencoders, it defines the encoder, decoder, and bottleneck. for diffusion, it defines the pretransform (aka compression model aka paste the autoencoder model definition), the conditioning, and the actual diffusion transformer shape.
+
+"training" defines (some of- the rest are passed to `train.py`) the training hyperparams (unless LR is set in the model definition, like dac does), losses (including any adversarial stuff), and demo generation params.
+
 ## autoencoders
 
 encoders compress audio from a `[channels, sample_length]` audio tensor to a smaller `[n_codebooks, latent_dim, length]` (quantized) or `[latent_dim, length]` (latent) tensor.
@@ -108,15 +112,36 @@ quantized (for dac-type encoders):
     . . .
     "model": {
         "pretransform": { "autoencoder model config here" },
-        "conditioning": {},
+        "conditioning": {
+            "configs": [],
+            "cond_dim": 512  # match the diffusion models `cond_token_dim` (??)
+        },
         "diffusion": {
             "type": "dit",
             "config": {},
             "cross_attention_cond_ids": [] # specific to dit?
         },
-        "io_channels": 64
+        "io_channels": 64 # latent dimension?? 
     }
 }
+```
+
+DiT model definition params:
+
+```py
+"config": {
+    "io_channels": 64,     # encoders latent_dim (?)
+    "embed_dim": 1536,     # ...
+    "depth": 24,           # ...
+    "num_heads": 24,       # pretty self-explanatory. usually in multiples of 8
+    "cond_token_dim": 768  # size of the input tensor, defined in "conditioning"
+}
+```
+
+```py
+"cross_attention_cond_ids": [
+    "...", # list each config ID defined in "configs"
+],
 ```
 
 ## training
@@ -126,5 +151,25 @@ quantized (for dac-type encoders):
     "learning_rate": 1e-4,
     "loss_configs": {},
     "demo": {}
+}
+```
+
+demo:
+
+```py
+"demo": {
+    "demo_every": 2000,
+
+    # FOR CONDITIONAL DIFFUSION MODELS:
+	"demo_steps": 250,  # 250 is overkill, 50 or 100 is alright
+    "num_demos": 4,     # run 4 test prompts
+    "demo_cond": [
+        {
+            "prompt": "test prompt",
+            "(conditioning ID)", "(value)", # ...
+        },
+        ... (x3 more)
+    ],
+    "demo_cfg_scales": [3, 6, 9] # run each demo at each of these 3 scales. it will use the same seed. generally wont have to touch this.
 }
 ```
