@@ -1,6 +1,15 @@
 # config docs for stable audio tools
 
-**base format**
+### overview
+
+stable audio tools lets you:
+- train custom audio autoencoders (either [dac](https://github.com/descriptinc/descript-audio-codec) or oobleck- their in-house autoencoder architecture)
+- train generative audio diffusion models (via [diffusion transformers](https://arxiv.org/pdf/2212.09748.pdf))
+- train [musicgen](https://github.com/facebookresearch/audiocraft) (less support)
+
+basic documentation for the train command etc is [in their repo](https://github.com/Stability-AI/stable-audio-tools/blob/main/README.md). the configs are (currently) poorly documented outside of [a few examples](https://github.com/Stability-AI/stable-audio-tools/tree/main/stable_audio_tools/configs)
+
+### base format
 
 most config fields change per model type, but every config has the following fields:
 
@@ -66,7 +75,7 @@ model definitions have `type` and `config`. `config` fields vary by type
 }
 ```
 
-**bottlenecks**
+### bottlenecks
 
 latents only:
 
