@@ -16,7 +16,7 @@ most config fields change per model type, but every config has the following fie
 
 ## autoencoders
 
-encoders compress audio from a [channels, sample_length] audio tensor to a smaller [n_codebooks, latent_dim, length] or [latent_dim, length] tensor.
+encoders compress audio from a `[channels, sample_length]` audio tensor to a smaller `[n_codebooks, latent_dim, length]` (quantized) or `[latent_dim, length]` (latent) tensor.
 
 ```py
 {
