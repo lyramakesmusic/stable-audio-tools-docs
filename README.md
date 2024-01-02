@@ -21,12 +21,12 @@ most config fields change per model type, but every config has the following fie
     "model_type": "autoencoder",
     . . .
     "model": {
-        "encoder": {},
-        "decoder": {},
-        "bottleneck: {},
-        "latent_dim": 32,
-        "downsampling_ratio": 2048,
-        "io_channels": 1
+        "encoder": {},               # described below
+        "decoder": {},               # described below
+        "bottleneck: {},             # described below
+        "latent_dim": 32,            # ... match the latent_dim from the model config, described below
+        "downsampling_ratio": 2048,  # ...
+        "io_channels": 1             # 1 = mono
     }
 }
 ```
@@ -34,26 +34,47 @@ most config fields change per model type, but every config has the following fie
 model definitions have `type` and `config`. `config` fields vary by type
 
 ```py
-"encoder": {
-    "type": "dac",
-    "config": {
-        "in_channels": 2,
-        "latent_dim": 128,
-        "d_model": 128,
-        "strides": [2,4,8,8]
-    }
+"encoder | decoder": {
+    "type": "dac | oobleck",
+    "config": {}
 }
 ```
+
+`dac` type encoders config like this:
+
+```py
+"config": {
+    "in_channels": 2,             # 2 = stereo
+    "latent_dim": 128,            # ...
+    "d_model": 128,               # ...
+    "strides": [2,4,8,8]          # ...
+}
+```
+
+`oobleck` type encoders config like this:
+
+```py
+"config": {
+    "in_channels": 1,             # 1 = mono
+    "channels": 128,              # ...
+    "c_mults": [1, 2, 4, 8, 16],  # ...
+    "strides": [4, 4, 8, 8, 8],   # ...
+    "latent_dim": 128,            # ...
+    "use_snake": true             # ...
+}
+```
+
+**bottlenecks**
 
 ```py
 "bottleneck": {
     "type": "dac_rvq",
     "config": {
-        "input_dim": 128,
-        "n_codebooks": 9,
-        "codebook_dim": 8,
-        "codebook_size": 2048,
-        "quantizer_dropout": 0.5
+        "input_dim": 128,          # match the encoder/decoder latent dim
+        "n_codebooks": 9,          # ...
+        "codebook_dim": 8,         # ...
+        "codebook_size": 2048,     # ...
+        "quantizer_dropout": 0.5   # you don't really need to touch this
     }
 },
 ```
